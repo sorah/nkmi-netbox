@@ -34,9 +34,15 @@
                "uses": "aws-actions/amazon-ecr-login@v2"
             },
             {
+              "uses": "actions/checkout@v4",
+              "with": {
+                "submodules": true
+              }
+            },
+            {
                "uses": "docker/build-push-action@v3",
                "with": {
-                  "context": "{{defaultContext}}",
+                  "context": ".",
                   "platforms": "linux/amd64",
                   "push": true,
                   "tags": "${{ steps.login-ecr.outputs.registry }}/netbox:${{ github.sha }},${{ steps.login-ecr.outputs.registry }}/netbox:latest"
