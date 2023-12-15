@@ -90,6 +90,8 @@ COPY extra.py /etc/netbox/config/extra.py
 RUN mkdir -p /root/.ssh && chmod 700 /root/.ssh
 COPY ssh_config /root/.ssh/config
 
+RUN sed -i'' -e "s|SecurityMiddleware',|SecurityMiddleware', 'whitenoise.middleware.WhiteNoiseMiddleware',|" /opt/netbox/netbox/netbox/settings.py
+
 WORKDIR /opt/netbox/netbox
 RUN env SECRET_KEY="dummyKeyWithMinimumLength-------------------------" /opt/netbox/venv/bin/python /opt/netbox/netbox/manage.py collectstatic --no-input
 
