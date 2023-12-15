@@ -9,7 +9,7 @@ workers = 2
 threads = 2
 
 # Timeout (in seconds) for a request to complete
-timeout = 18
+timeout = 120
 
 # The maximum number of requests a worker can handle before being respawned
 max_requests = 5000
