@@ -35,12 +35,10 @@ COPY netbox-docker/requirements-container.txt /
 COPY netbox/requirements.txt /
 COPY requirements.txt /requirements-dpl.txt
 
-# We compile 'psycopg' in the build process
-# We need 'social-auth-core[all]' in the Docker image. But if we put it in our own requirements-container.txt
-# we have potential version conflicts and the build will fail.
-# That's why we just replace it in the original requirements.txt.
-RUN sed -i -e '/psycopg/d' /requirements.txt \
- && sed -i -e 's/social-auth-core\[openidconnect\]/social-auth-core\[all\]/g; s/social-auth-core==\([0-9]\)/social-auth-core[all]==\1/g' /requirements.txt
+# We need 'social-auth-core[all]' for full SSO support,
+# and 'django-storages[boto3]' for S3 media storage.
+RUN sed -i -e 's/social-auth-core/social-auth-core\[all\]/g' /requirements.txt \
+ && sed -i -e 's/django-storages/django-storages\[boto3\]/g' /requirements.txt
 
 RUN /opt/netbox/venv/bin/pip install \
   -r /requirements.txt \
@@ -76,7 +74,6 @@ COPY --from=builder /opt/netbox/venv /opt/netbox/venv
 
 COPY netbox-docker/docker/configuration.docker.py /opt/netbox/netbox/netbox/configuration.py
 COPY netbox-docker/docker/docker-entrypoint.sh /opt/netbox/docker-entrypoint.sh
-COPY netbox-docker/docker/housekeeping.sh /opt/netbox/housekeeping.sh
 COPY netbox-docker/docker/launch-netbox.sh /opt/netbox/launch-netbox.sh
 COPY netbox-docker/docker/ldap_config.docker.py /opt/netbox/netbox/netbox/ldap_config.py
 COPY netbox-docker/configuration/ /etc/netbox/config/
@@ -93,7 +90,7 @@ COPY ssh_config /root/.ssh/config
 RUN sed -i'' -e "s|SecurityMiddleware',|SecurityMiddleware', 'whitenoise.middleware.WhiteNoiseMiddleware',|" /opt/netbox/netbox/netbox/settings.py
 
 WORKDIR /opt/netbox/netbox
-RUN env SECRET_KEY="dummyKeyWithMinimumLength-------------------------" /opt/netbox/venv/bin/python /opt/netbox/netbox/manage.py collectstatic --no-input
+RUN env DEBUG="true" SECRET_KEY="dummyKeyWithMinimumLength-------------------------" /opt/netbox/venv/bin/python /opt/netbox/netbox/manage.py collectstatic --no-input
 
 ENV HOME /root
 
