@@ -1,0 +1,50 @@
+services:
+  netbox:
+    build: .
+    ports:
+      - "8001:8001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SECRET_KEY: "dummy-secret-key-for-local-testing-only-do-not-use-in-production!!"
+      SKIP_SUPERUSER: "false"
+      LOGIN_REQUIRED: "true"
+
+      DB_HOST: postgres
+      DB_NAME: netbox
+      DB_USER: netbox
+      DB_PASSWORD: netbox
+      DB_SSLMODE: disable
+
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_SSL: "false"
+      REDIS_DATABASE: "0"
+
+      REDIS_CACHE_HOST: redis
+      REDIS_CACHE_PORT: "6379"
+      REDIS_CACHE_SSL: "false"
+      REDIS_CACHE_DATABASE: "1"
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: netbox
+      POSTGRES_USER: netbox
+      POSTGRES_PASSWORD: netbox
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U netbox"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  redis:
+    image: redis:7
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
