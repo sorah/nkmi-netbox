@@ -1,4 +1,4 @@
-FROM public.ecr.aws/ubuntu/ubuntu:22.04 AS builder
+FROM public.ecr.aws/ubuntu/ubuntu:24.04 AS builder
 
 WORKDIR /opt/netbox
 
@@ -40,7 +40,7 @@ COPY requirements.txt /requirements-dpl.txt
 # we have potential version conflicts and the build will fail.
 # That's why we just replace it in the original requirements.txt.
 RUN sed -i -e '/psycopg/d' /requirements.txt \
- && sed -i -e 's/social-auth-core\[openidconnect\]/social-auth-core\[all\]/g' /requirements.txt
+ && sed -i -e 's/social-auth-core\[openidconnect\]/social-auth-core\[all\]/g; s/social-auth-core==\([0-9]\)/social-auth-core[all]==\1/g' /requirements.txt
 
 RUN /opt/netbox/venv/bin/pip install \
   -r /requirements.txt \
@@ -48,7 +48,7 @@ RUN /opt/netbox/venv/bin/pip install \
   -r /requirements-dpl.txt
 
 
-FROM public.ecr.aws/ubuntu/ubuntu:22.04
+FROM public.ecr.aws/ubuntu/ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
@@ -57,16 +57,16 @@ RUN apt-get update \
       curl \
       fonts-noto-cjk \
       graphviz \
-      libevent-2.1-7 \
-      libffi7 \
+      libevent-2.1-7t64 \
+      libffi8 \
       libjpeg-turbo8 \
-      libldap-2.5-0 \
+      libldap2 \
       libpq5 \
       libsasl2-2 \
-      libssl3 \
+      libssl3t64 \
       libxslt1.1 \
-      libxmlsec1 \
-      libxmlsec1-openssl \
+      libxmlsec1t64 \
+      libxmlsec1t64-openssl \
       python3 \
       python3-venv \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
