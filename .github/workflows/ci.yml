@@ -13,7 +13,8 @@
          "name": "build",
          "permissions": {
             "contents": "read",
-            "id-token": "write"
+            "id-token": "write",
+            "packages": "write"
          },
          "runs-on": "ubuntu-latest",
          "steps": [
@@ -31,7 +32,15 @@
             },
             {
                "id": "login-ecr",
-               "uses": "aws-actions/amazon-ecr-login@062b18b96a7aff071d4dc91bc00c4c1a7945b076" 
+               "uses": "aws-actions/amazon-ecr-login@062b18b96a7aff071d4dc91bc00c4c1a7945b076"
+            },
+            {
+               "uses": "docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567",
+               "with": {
+                  "registry": "ghcr.io",
+                  "username": "${{ github.actor }}",
+                  "password": "${{ secrets.GITHUB_TOKEN }}"
+               }
             },
             {
               "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
@@ -45,7 +54,7 @@
                   "context": ".",
                   "platforms": "linux/amd64",
                   "push": true,
-                  "tags": "${{ steps.login-ecr.outputs.registry }}/netbox:${{ github.sha }},${{ steps.login-ecr.outputs.registry }}/netbox:latest",
+                  "tags": "${{ steps.login-ecr.outputs.registry }}/netbox:${{ github.sha }},${{ steps.login-ecr.outputs.registry }}/netbox:latest,ghcr.io/sorah/nkmi-netbox:${{ github.sha }},ghcr.io/sorah/nkmi-netbox:latest",
                   "cache-from": "type=gha",
                   "cache-to": "type=gha,mode=max",
                   "provenance": false,
