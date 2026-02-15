@@ -87,6 +87,9 @@ COPY extra.py /etc/netbox/config/extra.py
 RUN mkdir -p /root/.ssh && chmod 700 /root/.ssh
 COPY ssh_config /root/.ssh/config
 
+COPY lambda_handler.py /opt/netbox/lambda_handler.py
+COPY lambda_entrypoint.sh /lambda_entrypoint.sh
+
 COPY netbox/ /opt/netbox/
 
 RUN sed -i'' -e "s|SecurityMiddleware',|SecurityMiddleware', 'whitenoise.middleware.WhiteNoiseMiddleware',|" /opt/netbox/netbox/netbox/settings.py
