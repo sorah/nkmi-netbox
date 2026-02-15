@@ -40,7 +40,8 @@ COPY requirements.txt /requirements-dpl.txt
 RUN sed -i -e 's/social-auth-core/social-auth-core\[all\]/g' /requirements.txt \
  && sed -i -e 's/django-storages/django-storages\[boto3\]/g' /requirements.txt
 
-RUN /opt/netbox/venv/bin/pip install \
+RUN --mount=type=cache,target=/root/.cache/pip \
+  /opt/netbox/venv/bin/pip install \
   -r /requirements.txt \
   -r /requirements-container.txt \
   -r /requirements-dpl.txt
@@ -69,7 +70,6 @@ RUN apt-get update \
       python3-venv \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY netbox/ /opt/netbox/
 COPY --from=builder /opt/netbox/venv /opt/netbox/venv
 
 COPY netbox-docker/docker/configuration.docker.py /opt/netbox/netbox/netbox/configuration.py
@@ -87,12 +87,14 @@ COPY extra.py /etc/netbox/config/extra.py
 RUN mkdir -p /root/.ssh && chmod 700 /root/.ssh
 COPY ssh_config /root/.ssh/config
 
+COPY netbox/ /opt/netbox/
+
 RUN sed -i'' -e "s|SecurityMiddleware',|SecurityMiddleware', 'whitenoise.middleware.WhiteNoiseMiddleware',|" /opt/netbox/netbox/netbox/settings.py
 
 WORKDIR /opt/netbox/netbox
 RUN env DEBUG="true" SECRET_KEY="dummyKeyWithMinimumLength-------------------------" /opt/netbox/venv/bin/python /opt/netbox/netbox/manage.py collectstatic --no-input
 
-ENV HOME /root
+ENV HOME=/root
 
 VOLUME ["/opt/netbox/netbox/static"]
 ENTRYPOINT [ "/entry.sh" ]
