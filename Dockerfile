@@ -84,8 +84,7 @@ COPY prelude.sh /opt/netbox/prelude.sh
 COPY gunicorn.py /opt/netbox/gunicorn.py
 COPY extra.py /etc/netbox/config/extra.py
 
-RUN mkdir -p /root/.ssh && chmod 700 /root/.ssh
-COPY ssh_config /root/.ssh/config
+COPY ssh_config /opt/netbox/ssh_config
 
 COPY lambda_handler.py /opt/netbox/lambda_handler.py
 COPY lambda_entrypoint.sh /lambda_entrypoint.sh
@@ -96,8 +95,6 @@ RUN sed -i'' -e "s|SecurityMiddleware',|SecurityMiddleware', 'whitenoise.middlew
 
 WORKDIR /opt/netbox/netbox
 RUN env DEBUG="true" SECRET_KEY="dummyKeyWithMinimumLength-------------------------" /opt/netbox/venv/bin/python /opt/netbox/netbox/manage.py collectstatic --no-input
-
-ENV HOME=/root
 
 VOLUME ["/opt/netbox/netbox/static"]
 ENTRYPOINT [ "/entry.sh" ]
