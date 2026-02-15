@@ -47,7 +47,9 @@
                   "push": true,
                   "tags": "${{ steps.login-ecr.outputs.registry }}/netbox:${{ github.sha }},${{ steps.login-ecr.outputs.registry }}/netbox:latest",
                   "cache-from": "type=gha",
-                  "cache-to": "type=gha,mode=max"
+                  "cache-to": "type=gha,mode=max",
+                  "provenance": false,
+                  "sbom": false
                }
             }
          ]
