@@ -91,7 +91,8 @@ COPY lambda_entrypoint.sh /lambda_entrypoint.sh
 
 COPY netbox/ /opt/netbox/
 
-RUN sed -i'' -e "s|SecurityMiddleware',|SecurityMiddleware', 'whitenoise.middleware.WhiteNoiseMiddleware',|" /opt/netbox/netbox/netbox/settings.py
+RUN sed -i'' -e "s|SecurityMiddleware',|SecurityMiddleware', 'whitenoise.middleware.WhiteNoiseMiddleware',|" /opt/netbox/netbox/netbox/settings.py \
+ && echo 'WHITENOISE_ADD_HEADERS_FUNCTION = getattr(configuration, "WHITENOISE_ADD_HEADERS_FUNCTION", None)' >> /opt/netbox/netbox/netbox/settings.py
 
 WORKDIR /opt/netbox/netbox
 RUN env DEBUG="true" SECRET_KEY="dummyKeyWithMinimumLength-------------------------" /opt/netbox/venv/bin/python /opt/netbox/netbox/manage.py collectstatic --no-input

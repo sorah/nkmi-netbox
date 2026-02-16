@@ -2,9 +2,7 @@ from os import environ
 
 
 def _whitenoise_add_headers(headers, path, url):
-    cc = headers.get('Cache-Control', '')
-    if cc and 's-maxage' not in cc:
-        headers['Cache-Control'] = f"{cc}, s-maxage=86400"
+    headers['Cache-Control'] = 'max-age=300, public, s-maxage=31536000, stale-while-revalidate=900'
 
 
 WHITENOISE_ADD_HEADERS_FUNCTION = _whitenoise_add_headers
