@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## About This Project
 
-nkmi-netbox is a custom NetBox deployment packaged as a Docker image, built on top of the official NetBox (v3.6.6) and netbox-docker (2.7.0) projects included as git submodules. It adds AWS-specific deployment configuration including S3 storage, ECR-based CI/CD, and Gunicorn with WhiteNoise for serving.
+nkmi-netbox is a custom NetBox deployment packaged as a Docker image, built on top of the official NetBox (v4.6.2) and netbox-docker (5.0.1) projects included as git submodules. It adds AWS-specific deployment configuration including S3 storage, ECR-based CI/CD, and Gunicorn with WhiteNoise for serving.
 
 ## Repository Structure
 

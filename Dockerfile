@@ -1,4 +1,4 @@
-FROM public.ecr.aws/ubuntu/ubuntu:24.04 AS builder
+FROM public.ecr.aws/ubuntu/ubuntu:26.04 AS builder
 
 WORKDIR /opt/netbox
 
@@ -20,7 +20,7 @@ RUN apt-get update \
       libpq-dev \
       libsasl2-dev \
       libssl-dev \
-      libxslt-dev \
+      libxslt1-dev \
       libxmlsec1-dev \
       python3-all-dev \
       python3-venv \
@@ -47,7 +47,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
   -r /requirements-dpl.txt
 
 
-FROM public.ecr.aws/ubuntu/ubuntu:24.04
+FROM public.ecr.aws/ubuntu/ubuntu:26.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
@@ -64,8 +64,8 @@ RUN apt-get update \
       libsasl2-2 \
       libssl3t64 \
       libxslt1.1 \
-      libxmlsec1t64 \
-      libxmlsec1t64-openssl \
+      libxmlsec1-1 \
+      libxmlsec1-openssl1 \
       python3 \
       python3-venv \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
